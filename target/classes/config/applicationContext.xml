@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<beans xmlns="http://www.springframework.org/schema/beans"  
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
+	xmlns:p="http://www.springframework.org/schema/p"  
+	xmlns:context="http://www.springframework.org/schema/context"  
+	xmlns:aop="http://www.springframework.org/schema/aop"   
+	xmlns:tx="http://www.springframework.org/schema/tx"  
+	xmlns:dwr="http://www.directwebremoting.org/schema/spring-dwr"  
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	
+	xsi:schemaLocation="http://www.springframework.org/schema/beans   
+	http://www.springframework.org/schema/beans/spring-beans-3.2.xsd  
+	http://www.springframework.org/schema/context   
+	http://www.springframework.org/schema/context/spring-context-3.2.xsd  
+	http://www.springframework.org/schema/aop  
+	http://www.springframework.org/schema/aop/spring-aop-3.2.xsd  
+	http://www.springframework.org/schema/tx  
+	http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+	http://www.springframework.org/schema/mvc
+	http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd">  
+  
+    <!-- 激活spring的注解. -->  
+    <context:annotation-config />  
+  
+    <!-- 扫描注解组件并且自动的注入spring beans中.例如,他会扫描@Controller 和@Service下的文件.所以确保此base-package设置正确. -->  
+    <context:component-scan base-package="com.*" />  
+  
+    <!-- 配置注解驱动的Spring MVC Controller 的编程模型.注:次标签只在 Servlet MVC工作! -->  
+    <mvc:annotation-driven />  
+  	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+        <property name="driverClass" value="com.mysql.jdbc.Driver" />
+		<property name="jdbcUrl" value="jdbc:mysql://localhost:3306/sec?autoreconnect=true&amp;useUnicode=true" />
+		<property name="user" value="root" />
+		<property name="password" value="root" />
+		<property name="acquireIncrement" value="3" />
+		<property name="initialPoolSize" value="10" />
+		<property name="minPoolSize" value="10" />
+		<property name="maxPoolSize" value="20" />
+		<property name="maxStatements" value="1000" />
+		<property name="numHelperThreads" value="10" />
+		<property name="maxIdleTime" value="600" />
+	</bean> 
+	
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">  
+        <property name="dataSource">  
+            <ref bean="dataSource" />  
+        </property>  
+    </bean>
+	 
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean"> 
+		<!--dataSource属性指定要用到的连接池--> 
+		<property name="dataSource" ref="dataSource"/> 
+		<!--configLocation属性指定mybatis的核心配置文件--> 
+		<property name="configLocation" value="classpath:config/Configuration.xml" /> 
+		<!-- 所有配置的mapper文件 -->
+		<property name="mapperLocations" value="classpath*:com/dbp/xml/*.xml" />
+	</bean> 
+  
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.dbp.dao" />
+	</bean>
+	
+	<!-- 以下全部是事务配置(Service层事务) -->
+	<!-- 事务管理器配置,单数据源事务 -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+	<!-- 事务拦截规则 -->    
+    <aop:config>
+		<!-- 这里可配置多个 advice-ref 引用不用的 bean -->
+        <aop:advisor id="managerTx" advice-ref="txAdvice" pointcut="execution(* *..service.*.*(..))" order="0"/>
+    </aop:config>
+	<!-- 使用annotation定义事务(必须和 aop:config 等标签 一起配置才能使用@T标签) -->
+	<tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="false"/>
+    <!-- 事务 执行逻辑 -->
+    <tx:advice id="txAdvice">
+        <tx:attributes>
+            <tx:method name="*" propagation="REQUIRED" />
+        </tx:attributes>
+    </tx:advice> 
+</beans>  

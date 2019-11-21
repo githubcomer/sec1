@@ -1,0 +1,9 @@
+eclipse.preferences.version=1
+encoding//src/main/java=UTF-8
+encoding//src/main/java/com/security/service/CustomUserDetailsService.java=UTF-8
+encoding//src/main/resources=UTF-8
+encoding//src/main/resources/config/applicationContext.xml=UTF-8
+encoding//src/main/resources/config/spring-security.xml=UTF-8
+encoding//src/main/resources/config/spring-servlet.xml=UTF-8
+encoding//src/test/java=UTF-8
+encoding/<project>=UTF-8
