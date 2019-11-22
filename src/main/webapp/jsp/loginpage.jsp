@@ -5,11 +5,6 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>  
 <%@ page isELIgnored="false"%>
 
-<%
-String s = (String)request.getAttribute("error");
-System.out.println(".................................");
-System.out.println(s);
-%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">  
 <html>  
 <head>  
