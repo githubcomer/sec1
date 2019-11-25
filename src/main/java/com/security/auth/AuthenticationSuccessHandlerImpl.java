@@ -30,7 +30,7 @@ public class AuthenticationSuccessHandlerImpl implements AuthenticationSuccessHa
         //将用户放到 Session
         request.getSession().setAttribute("_sysuser", sysuser);
         //跳转到主页
-        response.sendRedirect(request.getContextPath() + "/auth/common");
+        response.sendRedirect(request.getContextPath() + "/main/common");
     }
 
 }
